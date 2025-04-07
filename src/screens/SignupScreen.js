@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, ImageBackground, KeyboardAvoidingView, Platform } from "react-native";
 import { BlurView } from "expo-blur";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // For the back button icon
+import { doc,setDoc } from "firebase/firestore";
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSignup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigation.navigate("Home");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save username to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        username: username,
+        email: email,
+        createdAt: new Date(),
+      });
+
+      // navigation.navigate("Home");
     } catch (error) {
-      // Handle specific Firebase errors
       switch (error.code) {
         case "auth/invalid-email":
           setErrorMessage("Please enter a valid email address.");
@@ -37,7 +47,6 @@ const SignupScreen = ({ navigation }) => {
     <ImageBackground source={require('../../assets/bg.jpg')} style={styles.background}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
         <BlurView intensity={50} style={styles.blurContainer}>
-          {/* Custom Back Button */}
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#007bff" />
           </TouchableOpacity>
@@ -45,6 +54,13 @@ const SignupScreen = ({ navigation }) => {
           <View style={styles.formContainer}>
             <Text style={styles.title}>Create an Account</Text>
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#ccc"
+              value={username}
+              onChangeText={setUsername}
+            />
             <TextInput
               style={styles.input}
               placeholder="Email"

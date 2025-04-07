@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, ImageBackground, KeyboardAvoidingView, Platform, StatusBar } from "react-native";
-import { BlurView } from "expo-blur";
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveUserToStorage } from "../utils/auth";
+import { scheduleSubscriptionReminder, triggerTestNotification } from "../utils/notifications";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("prawesh@gmail.com");
+  const [email, setEmail] = useState("prawesh1@gmail.com");
   const [password, setPassword] = useState("1234567");
   const [errorMessage, setErrorMessage] = useState("");
 
   // Set status bar style when the screen is focused
   useEffect(() => {
     StatusBar.setBarStyle("light-content"); // Set status bar to light-content (white icons/text)
-// Reset to dark-content when the screen is unmounted
+    return () => {
+      StatusBar.setBarStyle("dark-content"); // Reset to dark-content when the screen is unmounted
+    };
   }, []);
 
   const handleLogin = async () => {
+   
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate("Home");
+        await signInWithEmailAndPassword(auth, email, password);
+        await saveUserToStorage()
+        // navigation.navigate("Home");
     } catch (error) {
-      // Handle errors
       switch (error.code) {
         case "auth/invalid-email":
           setErrorMessage("Please enter a valid email address.");
@@ -42,39 +57,43 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={require('../../assets/bg.jpg')} style={styles.background}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        <BlurView intensity={50} style={styles.blurContainer}>
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Welcome Back!</Text>
-            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#ccc"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#ccc"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-              <Text style={styles.signupText}>Don't have an account? <Text style={styles.signupLink}>Sign Up</Text></Text>
-            </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <ImageBackground source={require("../../assets/bg.jpg")} style={styles.background}>
+        <View style={styles.container}>
+          <View style={styles.blurContainer}>
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Welcome Back!</Text>
+              {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#ccc"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#ccc"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                <Text style={styles.signupText}>
+                  Don't have an account? <Text style={styles.signupLink}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </BlurView>
-      </KeyboardAvoidingView>
-    </ImageBackground>
+        </View>
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -92,11 +111,11 @@ const styles = StyleSheet.create({
   blurContainer: {
     width: "80%",
     borderRadius: 15,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     overflow: "hidden",
   },
   formContainer: {
     padding: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
   title: {
     fontSize: 28,

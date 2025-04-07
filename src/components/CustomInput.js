@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
-const CustomInput = ({ label, value, onChangeText, placeholder, keyboardType }) => {
+const CustomInput = ({ label, value, onChangeText, placeholder, keyboardType, disable }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -13,6 +13,7 @@ const CustomInput = ({ label, value, onChangeText, placeholder, keyboardType }) 
         placeholder={placeholder}
         keyboardType={keyboardType}
         placeholderTextColor="#999"
+        editable = {!disable}
       />
     </View>
   );

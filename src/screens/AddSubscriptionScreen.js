@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from "react-native";
 import { Switch, Button } from "react-native-paper"; // For consistent design
 import DateTimePicker from "@react-native-community/datetimepicker"; // For date picker
 import { Picker } from "@react-native-picker/picker"; // For billing cycle picker
@@ -7,13 +15,16 @@ import { useNavigation } from "@react-navigation/native";
 import { addSubscription } from "../services/firestore";
 import CustomInput from "../components/CustomInput"; // Reusable input component
 import CustomButton from "../components/CustomButton"; // Reusable button component
+import { scheduleNotificationAsync } from "expo-notifications";
 
 const AddSubscriptionScreen = () => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [billingDate, setBillingDate] = useState(new Date()); // Default to today's date
   const [billingCycle, setBillingCycle] = useState(1); // Default 1 month
+  const [billingType, setBillingType] = useState("free");
   const [showDatePicker, setShowDatePicker] = useState(false); // Control date picker visibility
+  const [disable,setDisable] = useState(true)
   const navigation = useNavigation();
 
   // Handle date change
@@ -49,12 +60,19 @@ const AddSubscriptionScreen = () => {
     }
 
     try {
-      await addSubscription(name, parseFloat(amount), formatDate(billingDate), billingCycle);
+      await addSubscription(
+        name,
+        parseFloat(amount),
+        formatDate(billingDate),
+        billingCycle,
+        billingType
+      )
+
       Alert.alert("Success", "Subscription added successfully!");
       // navigation.goBack(); // Go back to HomeScreen
-      navigation.navigate('Home', { refresh: true });
+      navigation.navigate("Home", { refresh: true });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       Alert.alert("Error", "Failed to add subscription.");
     }
   };
@@ -70,12 +88,31 @@ const AddSubscriptionScreen = () => {
         placeholder="Enter subscription name"
       />
 
+      <View style={styles.pickerContainer}>
+        <Text style={styles.pickerLabel}>Billing Type</Text>
+        <View style={styles.picker}>
+          <Picker
+            selectedValue={billingType}
+            onValueChange={(value) => {
+              value == "paid" ? setDisable(false):setDisable(true);
+              setAmount("")
+              setBillingType(value)
+            }}
+            style={styles.pickerInput}
+          >
+            <Picker.Item label="Free Trial" value={"free"} />
+            <Picker.Item label="Paid Trial" value={"paid"} />
+          </Picker>
+        </View>
+      </View>
+
       <CustomInput
         label="Amount"
         value={amount}
         onChangeText={setAmount}
         placeholder="Enter amount"
         keyboardType="numeric"
+        disable={disable}
       />
 
       {/* Date Input Field */}
@@ -85,9 +122,7 @@ const AddSubscriptionScreen = () => {
       >
         <Text style={styles.dateInputLabel}>Billing Date</Text>
         <View style={styles.dateInput}>
-          <Text style={styles.dateInputText}>
-            {formatDate(billingDate)}
-          </Text>
+          <Text style={styles.dateInputText}>{formatDate(billingDate)}</Text>
         </View>
       </TouchableOpacity>
 
