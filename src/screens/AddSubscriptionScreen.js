@@ -66,7 +66,15 @@ const AddSubscriptionScreen = () => {
         formatDate(billingDate),
         billingCycle,
         billingType
-      )
+      ).then(() => {
+        setName("");
+        setAmount("");
+        setBillingDate(new Date());
+        setBillingCycle(1);
+        setBillingType("free");
+        setShowDatePicker(false);
+        setDisable(true)
+      })
 
       Alert.alert("Success", "Subscription added successfully!");
       // navigation.goBack(); // Go back to HomeScreen

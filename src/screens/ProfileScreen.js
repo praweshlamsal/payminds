@@ -31,7 +31,7 @@ const { width } = Dimensions.get("window");
 const ProfileScreen = () => {
   const theme = useTheme();
   const scrollY = useSharedValue(0);
-   const { username } = useContext(UserContext);
+   const { username,email } = useContext(UserContext);
 
   // Animated header height
   const headerHeight = useAnimatedStyle(() => {
@@ -81,7 +81,7 @@ const ProfileScreen = () => {
         scrollEventThrottle={16}
       >
         <Title style={styles.name}>{username}</Title>
-        <Subheading style={styles.bio}>john.doe@example.com</Subheading>
+        <Subheading style={styles.bio}>{email}</Subheading>
 
         {/* Subscription Details */}
         <Card style={styles.sectionCard}>

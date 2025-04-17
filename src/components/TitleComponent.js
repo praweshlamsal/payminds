@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const TitleComponent = ({ title, onPress, headerStyle, backButtonStyle, titleStyle, iconName, iconColor = '#333',showIcon=true }) => {
+const TitleComponent = ({ title, onPress, headerStyle, backButtonStyle, titleStyle, iconName='arrow-back', iconColor = '#333',showIcon=true }) => {
   const navigation = useNavigation();
   
   return (
@@ -12,7 +12,7 @@ const TitleComponent = ({ title, onPress, headerStyle, backButtonStyle, titleSty
         onPress={onPress || (() => navigation.goBack())}
         style={[styles.backButton, backButtonStyle]}
       >
-       {iconName ?? <Ionicons name={iconName} size={24} color={iconColor} />} 
+       <Ionicons name={iconName} size={24} color={iconColor} />
       </TouchableOpacity> }
 
       <Text style={[styles.headerTitle, titleStyle]}>{title}</Text>

@@ -8,6 +8,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (!auth) return; // Prevent issues if auth is not initialized
@@ -20,6 +21,7 @@ export const UserProvider = ({ children }) => {
 
           if (userDoc.exists()) {
             setUsername(userDoc.data().username);
+            setEmail(userDoc.data().email);
           }
           setUser(authUser);
         } catch (error) {
@@ -28,14 +30,15 @@ export const UserProvider = ({ children }) => {
       } else {
         setUser(null);
         setUsername("");
+        setEmail("");
       }
     });
 
-    return unsubscribe ? unsubscribe : () => {}; // Prevent undefined function error
+    return unsubscribe ? unsubscribe : () => {}; //
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, username }}>
+    <UserContext.Provider value={{ user, username ,email}}>
       {children}
     </UserContext.Provider>
   );

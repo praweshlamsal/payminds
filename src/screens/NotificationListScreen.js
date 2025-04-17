@@ -12,30 +12,19 @@ const NotificationListScreen = ({ route }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    console.log("kjhfaklsjdhf")
     const fetchData = async () => {
+      const subs = await getNotifications();
+      setNotifications(subs);
+    };
 
-            const subs = await getNotifications();
-
-            // Sort subscriptions by updatedAt in descending order (latest first)
-            const sortedSubscriptions = subs.sort((a, b) => {
-              if (a.updatedAt && b.updatedAt) {
-                return b.updatedAt.seconds - a.updatedAt.seconds;
-              }
-              return 0;
-            });
-
-            setNotifications(sortedSubscriptions);
-          };
-
-          fetchData().finally(() => {
-            setLoading(false);
-          }).catch((error) => {
-            console.error("Error fetching notifications:", error);
-            setLoading(false);
-          }
-          );
-        }, [route?.params?.refresh]);
+    fetchData().finally(() => {
+      setLoading(false);
+    }).catch((error) => {
+      console.error("Error fetching notifications:", error);
+      setLoading(false);
+    }
+    );
+  }, [route?.params?.refresh]);
 
 
 

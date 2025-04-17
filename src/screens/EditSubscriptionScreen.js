@@ -70,7 +70,7 @@ const EditSubscriptionScreen = ({ route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-       <TitleComponent  title="Edit Subscription" />
+       <TitleComponent showIcon={true}  title="Edit Subscription" />
 
       <CustomInput
         label="Subscription Name"

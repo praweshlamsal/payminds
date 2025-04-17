@@ -17,18 +17,17 @@ export async function requestNotificationPermission() {
   return true;
 }
 
-// Schedule a notification
+
 export const scheduleSubscriptionReminder = async (subscription) => {
   const { name, nextBillingDate } = subscription;
   
-
-  // Calculate 1 day before the next billing date
-  const reminderDate = dayjs(nextBillingDate).subtract(1, "day").toDate();
+  const reminderDate = new Date(Date.now() + 10000);
+  // const reminderDate = dayjs(nextBillingDate).subtract(1, "day").toDate();
   const notificationData = {
     title: "Subscription Reminder",
     body: `Your ${name} subscription is due tomorrow!`,
     timestamp: new Date().toISOString(),
-    userId:  auth.currentUser?.uid , // Replace with actual user ID from auth
+    userId:  auth.currentUser?.uid ,
     scheduledTime: reminderDate.toISOString(),
   };
 
@@ -66,6 +65,4 @@ export async function triggerTestNotification() {
     },
     trigger: { seconds: 5 }, // Trigger in 5 seconds
   });
-
-
 }

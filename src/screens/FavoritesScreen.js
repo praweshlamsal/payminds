@@ -33,8 +33,7 @@ const FavoritesScreen = () => {
        }} showIcon={false}  title="Favorite Subscription" />
 
       <FlatList
-        data={favoritesData}
-        
+        data={favoritesData}   
         renderItem={({ item }) => <ItemCard item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}

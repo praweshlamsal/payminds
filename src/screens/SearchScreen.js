@@ -40,7 +40,9 @@ const SearchScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TitleComponent showIcon={false } title="Search Subscriptions" />
+      <TitleComponent headerStyle={{
+        marginTop: 24,
+      }} showIcon={false } title="Search Subscriptions" />
       
       <View style={styles.searchContainer}>
         <TextInput

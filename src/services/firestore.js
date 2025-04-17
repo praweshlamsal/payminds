@@ -1,5 +1,5 @@
 import { db } from "../../firebaseConfig";
-import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, updateDoc, orderBy, query } from "firebase/firestore";
 import { auth } from "../../firebaseConfig"; 
 import dayjs from "dayjs"; // Import dayjs for date handling
 import { scheduleSubscriptionReminder } from "../utils/notifications";
@@ -62,25 +62,24 @@ const getNotifications = async () => {
     if (!userId) return [];
 
     const notificationsRef = collection(db, "notifications", userId, "userNotifications");
-    const querySnapshot = await getDocs(notificationsRef);
+    const notificationsQuery = query(notificationsRef, orderBy("timestamp", "desc"));
+    const querySnapshot = await getDocs(notificationsQuery);
 
     return querySnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
         ...data,
-        // Convert ISO string to Date object
         scheduledTime: data.scheduledTime ? new Date(data.scheduledTime) : null,
-        // Keep timestamp conversion if using serverTimestamp()
         timestamp: data.timestamp?.toDate?.() || null
       };
     });
-    
+
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return [];
   }
-};;
+};
 
 
   const onAuthStateChangedListener = (callback) => {

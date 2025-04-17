@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, ImageBackground, Dimensions } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Dimensions, TouchableOpacity } from "react-native";
 import { Card, Avatar, Badge } from "react-native-paper";
 import Animated, {
   useAnimatedStyle,
@@ -77,6 +77,7 @@ const TopCard = ({ scrollY }) => {
       >
         <View style={styles.overlay} />
         <Animated.View style={[styles.notificationContainer, notificationPosition]}>
+          <TouchableOpacity onPress={() => navigation.navigate("NotificationList")}>
           <Avatar.Icon size={28} icon="bell" color="#ffffff" style={styles.bellIcon} />
           <Badge onPress={()=>{
             //  scheduleSubscriptionReminder({
@@ -85,6 +86,7 @@ const TopCard = ({ scrollY }) => {
             // })
             navigation.navigate("NotificationList")
             }} style={styles.badge}>2</Badge>
+            </TouchableOpacity>
         </Animated.View>
         <Animated.Text style={[styles.welcomeText, welcomeTextOpacity]}>
           Welcome back,
